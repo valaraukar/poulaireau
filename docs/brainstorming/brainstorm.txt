@@ -1,0 +1,37 @@
+Idées systèmes de score :
+
+- Chain "simple" :
+	* Un ennemi détruit --> +1 à un multiplicateur (ennemy_destroyed)
+	* ennemy_destroyed est appliqué sur chaque valeur d'ennemi détruits.
+	* Le compteur est capé (100 ? 1000 ?)
+	* Remis à 0 pour chaque mort
+	* /3 à chaque auto-bomb
+	* -20 pour chaque bomb normal.
+	
+	Quand le compteur est capé :
+	
+	* Démarrage du rank.
+	* Rank a augmentation exponentielle (on tend rapidement vers son max)
+	* Plus de vitesse et de boulettes en fonction du rank.
+	
+	OU
+	
+	* A chaque 100 ennemis détruits --> On stock un "hyper"/"burst".
+	* Passer en mode hyper/burst permet d'avoir un tir BEAUCOUP plus puissant (Appelez Michael Bay pour les effets spéciaux)
+	MAIS
+	* Augmentation du rank à chaque hyper/burst (à voir avec les règles ci-dessus)
+	* On peut rester en mode Hyper/burst en redéclenchant un hyper/burst --> Mais augmentation du rank d'un cran, sec et violent.
+	* On peut rester en mode Hyper tant qu'on garde notre chaîne (chaîne à la DDP ?) --> Mais augmentation du rank progresive.
+	
+	
+- "Summit" system :
+
+	* Le tir du vaisseau et le rank (i.e. vitesse et densité des boulettes) évolue selon un compteur.
+	* Plus on enchaine les kills, plus le compteur augmente.
+	* Quand on ne détruit rien --> Le compteur baisse
+	* Le compteur à zéro --> Vaisseau faible et tirs ennemis lents
+	* Le compteur au max --> Vaisseau surpuissant et tirs ennemis rapides et surchargés.
+	
+	Comment rendre intéressant la phase ou le compteur baisse ? 
+	Que se passe-t-il quand on se fait toucher ?
+	Une fois au sommet what happens ?
