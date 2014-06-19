@@ -6,85 +6,84 @@ using System.Collections.Generic;
 
 namespace Pixelnest.BulletML
 {
-//	[CustomPropertyDrawer ( typeof ( BulletBankEntry ) )]
-	public class BulletBankEntryDrawer : PropertyDrawer
-	{
-		public override void OnGUI (Rect position, SerializedProperty property, GUIContent label)
-		{
-			position.y += 2;
-
-			EditorGUI.BeginProperty (position, label, property);
-			{
-				SerializedProperty nameProp						=	property.FindPropertyRelative ("name");
-				SerializedProperty prefabProp					=	property.FindPropertyRelative ("prefab");
-				SerializedProperty spriteProp					=	property.FindPropertyRelative ("sprite");
-				SerializedProperty TimeToLiveInSecondsProp 		= 	property.FindPropertyRelative ("TimeToLiveInSeconds");
-				SerializedProperty DestroyWhenOutOfScreenProp 	= 	property.FindPropertyRelative ("DestroyWhenOutOfScreen");
-
-				if (nameProp != null)
-				{
-					EditorGUI.PropertyField (position, nameProp);
-					position.y += 17;
-				}
-				if (prefabProp != null)
-				{
-					EditorGUI.PropertyField (position, prefabProp);
-					position.y += 17;
-				}
-				if (spriteProp != null)
-				{
-					EditorGUI.PropertyField (position, spriteProp);
-					position.y += 17;
-				}
-				if (TimeToLiveInSecondsProp != null)
-				{
-					EditorGUI.PropertyField (position, TimeToLiveInSecondsProp);
-					position.y += 17;
-				}
-				if (DestroyWhenOutOfScreenProp != null)
-				{
-					EditorGUI.PropertyField (position, DestroyWhenOutOfScreenProp);
-					position.y += 17;
-				}
-			}
-			EditorGUI.EndProperty ();
-		}
-
-		override public float GetPropertyHeight (SerializedProperty property, GUIContent label)
-		{
-			return 100;
-		}
-
-	}
-
 	[CustomEditor ( typeof (BulletBank) )]
 	public class BulletBankInspector : Editor
 	{
-		private GUIStyle title 								= new GUIStyle ("OL Title");
-		private SerializedProperty	entries;
-		private	Dictionary <string, bool>	entryFoldOut	=	new Dictionary<string, bool>();
+		private SerializedProperty			entries;
+		private Vector2 					scroll;
+		private	bool						showCreate;
+		private	List<bool>					isEditing		=	new List<bool>();
+		private	GUIStyle					style			=	new GUIStyle ();
 
 		private void OnEnable ()
 		{
-			this.entries	=	serializedObject.FindProperty ("bullets");
+			this.entries		=	serializedObject.FindProperty ("bullets");
+			this.style.richText	=	true;
+		}
+
+		private	void	CheckEditing ()
+		{
+			if (this.isEditing.Count != this.entries.arraySize)
+			{
+				this.isEditing.Clear ();
+				for (int i = 0; i < this.entries.arraySize; i++)
+					this.isEditing.Add (false);
+			}
+		}
+
+		private void CheckDelete (int index)
+		{
+			if (index != -1)
+				this.entries.DeleteArrayElementAtIndex (index);
+			Repaint ();
 		}
 
 		public override void OnInspectorGUI ()
 		{
 			serializedObject.Update ();
 
-			EditorGUILayout.LabelField ("Bullets", EditorStyles.whiteBoldLabel);
-
-			for (int i = 0; i < this.entries.arraySize; i++)
+			EditorGUILayout.BeginHorizontal ();
 			{
-				this.BulletEntryGUI (this.entries.GetArrayElementAtIndex (i) );
-				EditorGUILayout.Space ();
+				GUILayout.FlexibleSpace ();
+				EditorGUILayout.LabelField ("<size=30><color=white>Bullets Bank</color></size>", style);
+				GUILayout.FlexibleSpace ();
+			}
+			EditorGUILayout.EndHorizontal ();
+
+			GUILayout.Space (30);
+
+			this.CheckEditing ();
+
+			int	index	=	-1;
+
+			this.scroll = EditorGUILayout.BeginScrollView (this.scroll);
+			{
+				for (int i = 0; i < this.entries.arraySize; i++)
+				{
+					if ( this.BulletEntryGUI (this.entries.GetArrayElementAtIndex (i), i ) )
+					{
+						index	=	i;
+					}
+					EditorGUILayout.Space ();
+				}
+			}
+			EditorGUILayout.EndScrollView ();
+
+			this.CheckDelete (index);
+
+			GUILayout.Space (20);
+			GUILayout.FlexibleSpace ();
+
+			if (GUILayout.Button ("Add New Bullet") )
+			{
+				BulletBank bb	=	this.target as BulletBank;
+				bb.CreateBullet ();
 			}
 
 			serializedObject.ApplyModifiedProperties ();
 		}
 
-		private void BulletEntryGUI (SerializedProperty property)
+		private bool BulletEntryGUI (SerializedProperty property, int index)
 		{
 			SerializedProperty nameProp						=	property.FindPropertyRelative ("name");
 			SerializedProperty prefabProp					=	property.FindPropertyRelative ("prefab");
@@ -93,37 +92,56 @@ namespace Pixelnest.BulletML
 			SerializedProperty DestroyWhenOutOfScreenProp 	= 	property.FindPropertyRelative ("DestroyWhenOutOfScreen");
 
 			string 				entryName 					=	nameProp.stringValue;
-			if (!this.entryFoldOut.ContainsKey ( entryName ) )
-				this.entryFoldOut.Add ( entryName, true );
 
-			if (this.entryFoldOut[entryName] )
-				EditorGUILayout.BeginVertical ( "OL Box", GUILayout.Height (100f) );
-
-			// Reserve room for title
-			Rect headerRect = GUILayoutUtility.GetRect (new GUIContent (entryName), title);
-
-			Event evt = Event.current;
-			if (evt.type == EventType.MouseDown && evt.clickCount == 2 && headerRect.Contains (evt.mousePosition))
+			EditorGUILayout.BeginVertical ( "OL Box", GUILayout.Height (100f) );
 			{
-				if (this.entryFoldOut[entryName] )
-					EditorGUILayout.EndVertical ();
-				this.entryFoldOut[entryName]	=	!this.entryFoldOut[entryName];
-				Repaint ();
-				return;
-			}
+				// Reserve room for title
+				Rect headerRect = GUILayoutUtility.GetRect (new GUIContent (entryName), "OL Title");
 
-			if (this.entryFoldOut[entryName] )
-			{
 				EditorGUILayout.PropertyField (prefabProp);
 				EditorGUILayout.PropertyField (spriteProp);
 				EditorGUILayout.PropertyField (TimeToLiveInSecondsProp);
 				EditorGUILayout.PropertyField (DestroyWhenOutOfScreenProp);
+
+
+				Event evt = Event.current;
+				if (!this.isEditing[index] && evt.type == EventType.MouseDown && evt.clickCount == 2 && 
+				    headerRect.Contains (evt.mousePosition) )
+				{
+					this.isEditing[index] = true;
+				}
+				else if (this.isEditing[index] && evt.type == EventType.KeyDown && 
+				         (evt.keyCode == KeyCode.KeypadEnter || evt.keyCode == KeyCode.Return) )
+				{
+					if (nameProp.stringValue != "")
+					{
+						this.isEditing[index]	=	false;
+						Repaint ();
+					}
+				}
+
+				if (this.isEditing[index])
+				{
+					nameProp.stringValue	=	 GUI.TextField (headerRect, nameProp.stringValue, "OL Title");
+				}
+				else
+				{
+					GUI.Label (headerRect, new GUIContent (entryName), "OL Title");
+				}
 			}
+			EditorGUILayout.EndVertical ();
 
-			GUI.Label (headerRect, new GUIContent (entryName), title);
+			EditorGUILayout.BeginHorizontal ();
+			{
+				GUILayout.FlexibleSpace();
+				if (GUILayout.Button ("Remove") )
+				{
+					return true;
+				}
+			}
+			EditorGUILayout.EndHorizontal ();
 
-			if (this.entryFoldOut[entryName] )
-				EditorGUILayout.EndVertical ();
+			return false;
 		}
 
 	}

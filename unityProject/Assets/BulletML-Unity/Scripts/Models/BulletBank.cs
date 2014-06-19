@@ -15,7 +15,7 @@ namespace Pixelnest.BulletML
     /// <summary>
     /// Bullet name. Should match the XML definition.
     /// </summary>
-    public string name;
+    public string name	=	"new bullet";
     
     /// <summary>
     /// Unity prefab
@@ -47,5 +47,10 @@ namespace Pixelnest.BulletML
     /// Bullet definitions
     /// </summary>
     public List<BulletBankEntry> bullets;
+
+	public	void	CreateBullet ()
+	{
+		this.bullets.Add (new BulletBankEntry () );
+	}
   }
 }
