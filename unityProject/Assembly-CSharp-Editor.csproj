@@ -49,6 +49,7 @@
      <Compile Include="Assets\BulletML-Unity\Scripts\Editor\BulletBankInspector.cs" />
      <Compile Include="Assets\BulletML-Unity\Scripts\Editor\BulletMLMenu.cs" />
      <Compile Include="Assets\BulletML-Unity\Scripts\Editor\BulletManagerInspector.cs" />
+     <Compile Include="Assets\BulletML-Unity\Scripts\Editor\PatternCreator.cs" />
      <Compile Include="Assets\BulletML-Unity\Scripts\Editor\ScriptableObjectUtility.cs" />
      <Compile Include="Assets\CreateScriptDialog\Editor\NewScriptGenerator.cs" />
      <Compile Include="Assets\CreateScriptDialog\Editor\NewScriptWindow.cs" />
@@ -111,11 +112,11 @@
      <None Include="Assets\BulletML-Unity\Demo\Resources\patterns\[MDA]_circular_sun.xml" />
      <None Include="Assets\CreateScriptDialog\SmartScriptTemplates\Function Call From Menu.boo.txt" />
      <None Include="Assets\CreateScriptDialog\SmartScriptTemplates\Editor Window.js.txt" />
- <Reference Include="UnityEditor.Graphs">
- <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>
- </Reference>
  <Reference Include="Equationator">
  <HintPath>C:/Users/Florian/Desktop/Florian/Unity/poulaireau/unityProject/Assets/BulletML-Unity/Plugins/BulletMLLib/externals/Equationator.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.Graphs">
+ <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>
  </Reference>
   </ItemGroup>
   <ItemGroup>

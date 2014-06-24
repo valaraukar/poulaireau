@@ -22,6 +22,11 @@ namespace Pixelnest.BulletML
     /// </summary>
     public BulletBank bulletBank;
 
+	/// <summary>
+	/// The bullets parent.
+	/// </summary>
+	public GameObject bulletsParent;
+
     /// <summary>
     /// If the bullet is nto found in the bank, use a defautl one
     /// </summary>
@@ -79,12 +84,12 @@ namespace Pixelnest.BulletML
       // Init BulletML
       BulletMLLib.GameManager.GameDifficulty += () =>
       {
-        return gameDifficulty;
+        return this.gameDifficulty;
       };
 
       // On mobile, the framerate is at 30 FPS by default.
       // As BulletML is made to run at 60 FPS, we fore the framerate
-      if (forceFrameRate)
+      if (this.forceFrameRate)
       {
         Application.targetFrameRate = 60;
       }
@@ -93,22 +98,22 @@ namespace Pixelnest.BulletML
     void Start()
     {
       // Check prefabs
-      if (player == null && GetPlayerPosition == null) Debug.LogError("Missing 'player' reference for BulletManagerScript!");
-      if (bulletBank == null && OnBulletSpawned == null) Debug.LogError("Missing 'bulletBank' for BulletManagerScript!");
+      if (this.player == null && this.GetPlayerPosition == null) 
+				Debug.LogError("Missing 'player' reference for BulletManagerScript!");
+      if (this.bulletBank == null && this.OnBulletSpawned == null) 
+				Debug.LogError("Missing 'bulletBank' for BulletManagerScript!");
     }
 
     void Update()
     {
-      // Clamp
-      gameDifficulty = Mathf.Clamp(gameDifficulty, 0f, 1f);
+     	// Clamp
+		this.gameDifficulty = Mathf.Clamp(this.gameDifficulty, 0f, 1f);
 
-      if (timeSpeed != previousTimeSpeed || scale != previousScale)
-      {
-        SetBulletProperties(timeSpeed, scale);
-      }
+		if (this.timeSpeed != this.previousTimeSpeed || this.scale != this.previousScale)
+        	SetBulletProperties(timeSpeed, scale);
 
-      previousTimeSpeed = timeSpeed;
-      previousScale = scale;
+		this.previousTimeSpeed = this.timeSpeed;
+		this.previousScale = this.scale;
     }
 
     /// <summary>
@@ -119,8 +124,8 @@ namespace Pixelnest.BulletML
     public BulletMLLib.Bullet CreateBullet(BulletMLLib.Bullet source, bool top)
     {
       // Try to get the parent
-      GameObject gameObject = null;
-      BulletSourceScript emitter = null;
+      GameObject 			gameObject 	= null;
+      BulletSourceScript 	emitter 	= null;
 
       if (source is TopBullet)
       {
@@ -144,15 +149,15 @@ namespace Pixelnest.BulletML
       {
         // Create a bullet
         BulletObject bullet = null;
-        if (OnBulletCreated != null)
+        if (this.OnBulletCreated != null)
         {
-          bullet = OnBulletCreated(gameObject);
+			bullet = this.OnBulletCreated(gameObject);
         }
         else
         {
           bullet = new BulletObject(this, gameObject);
         }
-        bullet.OnBulletSpawned += BulletSpawnedHandler;
+        bullet.OnBulletSpawned += this.BulletSpawnedHandler;
 
         return bullet;
       }
@@ -167,13 +172,13 @@ namespace Pixelnest.BulletML
     {
       BulletScript bulletScript = null;
 
-      if (OnBulletSpawned != null)
+      if (this.OnBulletSpawned != null)
       {
-        bulletScript = OnBulletSpawned(bullet, bulletName);
+        bulletScript = this.OnBulletSpawned(bullet, bulletName);
       }
       else
       {
-        bulletScript = CreateBulletFromBank(bullet, bulletName);
+        bulletScript = this.CreateBulletFromBank(bullet, bulletName);
       }
 
       // Bullet properties
@@ -207,7 +212,7 @@ namespace Pixelnest.BulletML
 
       if (bankEntry == null)
       {
-        if (useDefaultBulletIfMissing || string.IsNullOrEmpty(bulletName))
+        if (this.useDefaultBulletIfMissing || string.IsNullOrEmpty(bulletName))
         {
           bankEntry = bulletBank.bullets.FirstOrDefault();
         }
@@ -221,6 +226,12 @@ namespace Pixelnest.BulletML
 
       // Instatiate a prefab
       GameObject bulletGameObject = Instantiate(bankEntry.prefab, bullet.position, Quaternion.identity) as GameObject;
+
+	  // Set the bullet in a parent
+	  if (this.bulletsParent != null)
+	  {
+			bulletGameObject.transform.parent	=	this.bulletsParent.transform;
+	  }
 
       // Change sprite if the field has been filled
       if (bankEntry.sprite != null)

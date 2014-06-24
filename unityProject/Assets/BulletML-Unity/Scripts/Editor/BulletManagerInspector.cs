@@ -10,6 +10,7 @@ namespace Pixelnest.BulletML
 	{
 		SerializedProperty player;
 		SerializedProperty bulletBank;
+		SerializedProperty bulletsParent;
 		SerializedProperty useDefault;
 		SerializedProperty scale;
 		SerializedProperty timeSpeed;
@@ -17,12 +18,13 @@ namespace Pixelnest.BulletML
 
 		private void OnEnable ()
 		{
-			this.player		=	serializedObject.FindProperty ("player");
-			this.bulletBank	=	serializedObject.FindProperty ("bulletBank");
-			this.useDefault	=	serializedObject.FindProperty ("useDefaultBulletIfMissing");
-			this.scale		=	serializedObject.FindProperty ("scale");
-			this.timeSpeed	=	serializedObject.FindProperty ("timeSpeed");
-			this.difficulty	=	serializedObject.FindProperty ("gameDifficulty");
+			this.player			=	serializedObject.FindProperty ("player");
+			this.bulletBank		=	serializedObject.FindProperty ("bulletBank");
+			this.bulletsParent	=	serializedObject.FindProperty ("bulletsParent");
+			this.useDefault		=	serializedObject.FindProperty ("useDefaultBulletIfMissing");
+			this.scale			=	serializedObject.FindProperty ("scale");
+			this.timeSpeed		=	serializedObject.FindProperty ("timeSpeed");
+			this.difficulty		=	serializedObject.FindProperty ("gameDifficulty");
 		}
 
 		public override void OnInspectorGUI ()
@@ -31,14 +33,13 @@ namespace Pixelnest.BulletML
 
 			EditorGUILayout.PropertyField (this.player);
 			EditorGUILayout.PropertyField (this.bulletBank);
+			EditorGUILayout.PropertyField (this.bulletsParent);
 			EditorGUILayout.PropertyField (this.useDefault);
 			EditorGUILayout.Slider (this.scale, 0f, 1f);
 			EditorGUILayout.Slider (this.timeSpeed, 0f, 1f);
 			EditorGUILayout.Slider (this.difficulty, 0f, 1f);
 
 			serializedObject.ApplyModifiedProperties ();
-
-//			base.OnInspectorGUI ();
 		}
 	}
 }
